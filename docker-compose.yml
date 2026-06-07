@@ -18,5 +18,6 @@ services:
       - WATCHTOWER_CLEANUP=true
       - REPO_USER=${HARBOR_USERNAME}
       - REPO_PASS=${HARBOR_PASSWORD}
+      - DOCKER_API_VERSION=1.41
     command: --interval 30
     restart: unless-stopped
