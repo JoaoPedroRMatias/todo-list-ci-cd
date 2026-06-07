@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef, type FormEvent, type KeyboardEvent } from "react";
 import { Plus, Trash2, X, Sparkles, ClipboardList } from "lucide-react";
-import confetti from "canvas-confetti";
 import { useTodos } from "@/hooks/useTodos";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -20,17 +19,19 @@ export function TodoApp() {
   useEffect(() => {
     if (allDone && !celebratedRef.current) {
       celebratedRef.current = true;
-      const fire = (origin: { x: number; y: number }) =>
-        confetti({
-          particleCount: 80,
-          spread: 70,
-          startVelocity: 45,
-          origin,
-          colors: ["#a7f3d0", "#fcd34d", "#fda4af", "#a5b4fc", "#fbbf24"],
-        });
-      fire({ x: 0.2, y: 0.6 });
-      fire({ x: 0.8, y: 0.6 });
-      setTimeout(() => fire({ x: 0.5, y: 0.5 }), 180);
+      void import("canvas-confetti").then(({ default: confetti }) => {
+        const fire = (origin: { x: number; y: number }) =>
+          confetti({
+            particleCount: 80,
+            spread: 70,
+            startVelocity: 45,
+            origin,
+            colors: ["#a7f3d0", "#fcd34d", "#fda4af", "#a5b4fc", "#fbbf24"],
+          });
+        fire({ x: 0.2, y: 0.6 });
+        fire({ x: 0.8, y: 0.6 });
+        setTimeout(() => fire({ x: 0.5, y: 0.5 }), 180);
+      });
     }
     if (!allDone) celebratedRef.current = false;
   }, [allDone]);
