@@ -7,15 +7,16 @@ RUN bun run build
 
 FROM oven/bun:1-slim AS runner
 WORKDIR /app
+RUN apt-get update && apt-get install -y --no-install-recommends nginx \
+    && rm -rf /var/lib/apt/lists/* \
+    && rm -f /etc/nginx/sites-enabled/default
 ENV NODE_ENV=production
-COPY --from=builder /app/package.json ./package.json
-COPY --from=builder /app/bun.lock ./bun.lock
+COPY --from=builder /app/package.json ./
+COPY --from=builder /app/bun.lock ./
 RUN bun install --production --frozen-lockfile
 COPY --from=builder /app/dist ./dist
+COPY nginx.conf /etc/nginx/conf.d/app.conf
+COPY entrypoint.sh ./
+RUN chmod +x entrypoint.sh
 EXPOSE 3000
-CMD ["bun", "dist/server/server.js"]
-
-FROM nginx:alpine AS web
-COPY --from=builder /app/dist/client /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-EXPOSE 80
+CMD ["./entrypoint.sh"]
