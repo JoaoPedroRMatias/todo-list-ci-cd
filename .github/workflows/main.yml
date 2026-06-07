@@ -1,12 +1,9 @@
-name: CI
+name: Main
 
 on:
-  push:
-    branches:
-      - develop
   pull_request:
     branches:
-      - develop
+      - main
 
 jobs:
   hello:
@@ -15,4 +12,4 @@ jobs:
 
     steps:
       - name: Print message
-        run: echo "Deploy realizado com sucesso!"
+        run: echo "Pull request para main recebido!"
