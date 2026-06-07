@@ -1,10 +1,20 @@
 services:
   todo-list:
-    container_name: todo-list
+    container_name: todo-list-app
     build: .
     image: ${HARBOR_HOST}/to-do-list/todo-list:latest
     ports:
       - "3000:3000"
     environment:
       NODE_ENV: production
+    restart: unless-stopped
+
+  watchtower:
+    container_name: todo-list-watchtower
+    image: containrrr/watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - WATCHTOWER_CLEANUP=true
+    command: --interval 30
     restart: unless-stopped
