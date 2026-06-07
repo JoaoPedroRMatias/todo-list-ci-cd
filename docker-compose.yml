@@ -1,9 +1,21 @@
 services:
-  todo-list:
-    build: .
+  app:
+    container_name: todo-list-ssr
+    build:
+      context: .
+      target: runner
     image: ${HARBOR_HOST}/to-do-list/todo-list:latest
-    ports:
-      - "3000:3000"
     environment:
       NODE_ENV: production
+    restart: unless-stopped
+
+  web:
+    container_name: todo-list-web
+    build:
+      context: .
+      target: web
+    ports:
+      - "3000:80"
+    depends_on:
+      - app
     restart: unless-stopped

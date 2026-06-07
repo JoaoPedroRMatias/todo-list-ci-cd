@@ -14,3 +14,8 @@ RUN bun install --production --frozen-lockfile
 COPY --from=builder /app/dist ./dist
 EXPOSE 3000
 CMD ["bun", "dist/server/server.js"]
+
+FROM nginx:alpine AS web
+COPY --from=builder /app/dist/client /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+EXPOSE 80
