@@ -1,5 +1,6 @@
-import { useState, type FormEvent, type KeyboardEvent } from "react";
-import { Plus, Trash2, X } from "lucide-react";
+import { useState, useEffect, useRef, type FormEvent, type KeyboardEvent } from "react";
+import { Plus, Trash2, X, Sparkles, ClipboardList } from "lucide-react";
+import confetti from "canvas-confetti";
 import { useTodos } from "@/hooks/useTodos";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -13,6 +14,26 @@ export function TodoApp() {
 
   const completedCount = todos.filter((t) => t.completed).length;
   const pendingCount = todos.length - completedCount;
+  const allDone = todos.length > 0 && pendingCount === 0;
+  const celebratedRef = useRef(false);
+
+  useEffect(() => {
+    if (allDone && !celebratedRef.current) {
+      celebratedRef.current = true;
+      const fire = (origin: { x: number; y: number }) =>
+        confetti({
+          particleCount: 80,
+          spread: 70,
+          startVelocity: 45,
+          origin,
+          colors: ["#a7f3d0", "#fcd34d", "#fda4af", "#a5b4fc", "#fbbf24"],
+        });
+      fire({ x: 0.2, y: 0.6 });
+      fire({ x: 0.8, y: 0.6 });
+      setTimeout(() => fire({ x: 0.5, y: 0.5 }), 180);
+    }
+    if (!allDone) celebratedRef.current = false;
+  }, [allDone]);
 
   function handleSubmit(e?: FormEvent) {
     e?.preventDefault();
@@ -63,10 +84,26 @@ export function TodoApp() {
 
       <div className="mt-6 space-y-2">
         {todos.length === 0 && (
-          <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border py-12 text-center">
-            <p className="text-sm text-muted-foreground">
-              No tasks yet. Add one above.
+          <div className="relative flex flex-col items-center justify-center overflow-hidden rounded-2xl border border-dashed border-border bg-gradient-to-br from-muted/40 via-background to-accent/30 py-14 text-center animate-fade-in">
+            <div className="absolute -top-8 -left-8 h-32 w-32 rounded-full bg-primary/10 blur-3xl" />
+            <div className="absolute -bottom-10 -right-6 h-32 w-32 rounded-full bg-accent/40 blur-3xl" />
+            <div className="relative mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-card shadow-sm ring-1 ring-border">
+              <ClipboardList className="h-7 w-7 text-muted-foreground" />
+              <Sparkles className="absolute -right-2 -top-2 h-5 w-5 text-amber-400 animate-pulse" />
+            </div>
+            <p className="relative text-sm font-medium text-foreground">
+              Your day is a blank canvas
             </p>
+            <p className="relative mt-1 text-xs text-muted-foreground">
+              Add your first task and let&apos;s get going.
+            </p>
+          </div>
+        )}
+
+        {allDone && (
+          <div className="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-100 via-amber-50 to-rose-100 px-4 py-3 text-sm font-medium text-foreground shadow-sm animate-fade-in">
+            <Sparkles className="h-4 w-4 text-amber-500" />
+            All done! Treat yourself.
           </div>
         )}
 
@@ -74,7 +111,7 @@ export function TodoApp() {
           <div
             key={todo.id}
             className={cn(
-              "group flex items-center gap-3 rounded-xl border border-border bg-card px-4 py-3 shadow-sm transition-colors",
+              "group flex items-center gap-3 rounded-xl border border-border bg-card px-4 py-3 shadow-sm transition-all animate-fade-in hover:shadow-md",
               todo.completed && "bg-muted/40",
             )}
           >
