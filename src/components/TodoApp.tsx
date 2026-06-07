@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
+import bannerAsset from "@/assets/tasks-banner.jpg.asset.json";
 
 export function TodoApp() {
   const { todos, addTodo, toggleTodo, deleteTodo, clearCompleted } = useTodos();
@@ -28,13 +29,18 @@ export function TodoApp() {
 
   return (
     <div className="mx-auto w-full max-w-lg px-4 py-12">
-      <div className="mb-8 text-center">
-        <h1 className="text-3xl font-semibold tracking-tight text-foreground">
-          Tasks
-        </h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          {pendingCount} pending · {completedCount} done
-        </p>
+      <div
+        className="mb-8 overflow-hidden rounded-2xl bg-cover bg-center text-center"
+        style={{ backgroundImage: `url(${bannerAsset.url})` }}
+      >
+        <div className="bg-background/60 px-4 py-10 backdrop-blur-sm">
+          <h1 className="text-3xl font-semibold tracking-tight text-foreground drop-shadow-sm">
+            Tasks
+          </h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {pendingCount} pending · {completedCount} done
+          </p>
+        </div>
       </div>
 
       <div className="flex items-center gap-2">
