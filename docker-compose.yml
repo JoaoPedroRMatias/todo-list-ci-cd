@@ -16,5 +16,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - WATCHTOWER_CLEANUP=true
+      - REPO_USER=${HARBOR_USERNAME}
+      - REPO_PASS=${HARBOR_PASSWORD}
     command: --interval 30
     restart: unless-stopped
