@@ -9,10 +9,16 @@ on:
       - develop
 
 jobs:
-  hello:
-    name: Hello
+  ci:
+    name: CI
     runs-on: ubuntu-latest
 
     steps:
-      - name: Print message
-        run: echo "Deploy realizado com sucesso!"
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
