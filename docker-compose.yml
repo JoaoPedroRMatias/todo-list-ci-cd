@@ -8,6 +8,8 @@ services:
     environment:
       NODE_ENV: production
     restart: unless-stopped
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
 
   watchtower:
     container_name: todo-list-watchtower
@@ -19,5 +21,5 @@ services:
       - REPO_USER=${HARBOR_USERNAME}
       - REPO_PASS=${HARBOR_PASSWORD}
       - DOCKER_API_VERSION=1.41
-    command: --interval 30
+    command: --interval 30 --label-enable
     restart: unless-stopped
