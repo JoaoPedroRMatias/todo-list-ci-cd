@@ -1,6 +1,8 @@
 # Tasks — To-Do List
 
-Aplicação de lista de tarefas simples, limpa e rápida. Dados persistidos no `localStorage`, sem backend.
+**Lista de tarefas simples, limpa e rápida — com pipeline CI/CD completo.**
+
+Aplicação frontend sem backend. Dados persistidos no `localStorage`. Deploy automatizado via Harbor + Watchtower.
 
 ## Funcionalidades
 
@@ -24,6 +26,7 @@ Acesse `http://localhost:3000`.
 
 - [Bun](https://bun.sh) >= 1.0
 - Node.js >= 20 (opcional, para compatibilidade)
+- Docker + Docker Compose (para produção)
 
 ## Stack
 
@@ -45,6 +48,58 @@ Acesse `http://localhost:3000`.
 | `bun run preview` | Preview do build            |
 | `bun run lint`    | Lint com ESLint             |
 | `bun run format`  | Formatar com Prettier       |
+
+## CI/CD Pipeline
+
+```
+push → develop        →  CI (lint + install)
+PR   → main           →  CI → Build Docker → Push Harbor
+prod                  →  Watchtower detecta :latest → deploy automático
+```
+
+### Workflows
+
+| Workflow     | Trigger              | Ações                              |
+|--------------|----------------------|------------------------------------|
+| `ci.yml`     | push/PR em `develop` | Install deps, lint                 |
+| `main.yml`   | PR em `main`         | CI + build + push Harbor           |
+
+### Secrets necessários
+
+| Secret             | Descrição                        |
+|--------------------|----------------------------------|
+| `HARBOR_HOST`      | Host do registry Harbor          |
+| `HARBOR_USERNAME`  | Usuário Harbor                   |
+| `HARBOR_PASSWORD`  | Senha Harbor                     |
+
+### Tags publicadas
+
+```
+<HARBOR_HOST>/to-do-list/todo-list:latest
+<HARBOR_HOST>/to-do-list/todo-list:<git-sha>
+```
+
+## Produção (Docker)
+
+O `docker-compose.yml` sobe a aplicação e o Watchtower juntos.
+
+```bash
+# copiar e preencher variáveis de ambiente
+cp .env.example .env
+
+# subir
+docker compose up -d
+```
+
+### Variáveis de ambiente (`.env`)
+
+```env
+HARBOR_HOST=seu-harbor.dominio.com
+HARBOR_USERNAME=seu-usuario
+HARBOR_PASSWORD=sua-senha
+```
+
+O Watchtower verifica novas imagens a cada **30 segundos** e reinicia automaticamente o container `todo-list-app` quando uma nova versão for publicada no Harbor.
 
 ## Estrutura
 
